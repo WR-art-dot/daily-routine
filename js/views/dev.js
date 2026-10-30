@@ -457,6 +457,17 @@ function logsCard(project) {
   return card;
 }
 
+function newProjectAdder(ctx) {
+  return addRow({
+    placeholder: '＋ 输入项目名，回车创建',
+    onAdd: async (value) => {
+      const rec = await track(put('projects', { name: value, status: 'active', stack: [], repo: '', note: '' }));
+      selectedId = rec.id;
+      ctx.navigate(`/dev/${rec.id}/task`);
+    }
+  });
+}
+
 async function render(root, ctx, isRefresh = false) {
   const t = ++token;
   rootEl = root;
@@ -497,28 +508,25 @@ async function render(root, ctx, isRefresh = false) {
       )
     );
   }
-  projectList.append(
-    addRow({
-      placeholder: '＋ 新项目',
-      onAdd: async (value) => {
-        const rec = await track(
-          put('projects', { name: value, status: 'active', stack: [], repo: '', note: '' })
-        );
-        selectedId = rec.id;
-        ctx.navigate(`/dev/${rec.id}/task`);
-      }
-    })
-  );
+  projectList.append(newProjectAdder(ctx));
 
   if (!project) {
+    const starter = h(
+      'div',
+      { class: 'card', style: { maxWidth: '460px' } },
+      h('div', { class: 'card-head' }, h('span', { class: 'card-title', text: '新建第一个项目' })),
+      h('div', { class: 'hint', style: { marginBottom: '6px' }, text: '建好项目后，里面按 功能 / 修复 / 优化 三组记工作项，还能记 bug、版本和日志。' }),
+      newProjectAdder(ctx)
+    );
     root.append(
       h(
         'div',
         { class: 'page' },
         emptyState({
           title: '还没有项目',
-          text: '左上角输入一个项目名，回车就开始记任务、bug 和日志。'
-        })
+          text: '在下面输入项目名，回车创建。'
+        }),
+        starter
       )
     );
     ctx.setMeta('0 个项目');

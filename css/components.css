@@ -110,14 +110,16 @@ button.chip:hover{ background:var(--surface-2); color:var(--ink); border-color:v
 
 .add-row{
   display:flex; align-items:center; gap:8px;
-  padding:7px 6px;
+  padding:7px 10px;
   color:var(--ink-3);
   font-size:var(--fs-3);
   cursor:text;
-  border-radius:var(--r-1);
-  transition:background .12s, color .12s;
+  border:1px dashed var(--line-strong);
+  border-radius:var(--r-2);
+  transition:background .12s, color .12s, border-color .12s;
 }
-.add-row:hover{ background:var(--surface-2); color:var(--ink-2); }
+.add-row:hover{ background:var(--surface-2); color:var(--ink-2); border-color:var(--accent-line); }
+.add-row:focus-within{ border-color:var(--accent); border-style:solid; color:var(--ink-2); background:var(--surface); }
 .add-row .input{ border-color:transparent; background:transparent; padding:0; min-height:22px; }
 .add-row .input:focus{ box-shadow:none; border-color:transparent; }
 

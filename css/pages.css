@@ -117,11 +117,12 @@
   border-radius:99px; background:var(--surface-3); color:var(--ink-2);
   font-size:var(--fs-1); font-variant-numeric:tabular-nums;
 }
-.tabs{ display:flex; gap:2px; }
+.tabs{ display:flex; gap:2px; flex:none; }
 .tab{
   padding:4px 11px; border-radius:var(--r-1);
   font-size:var(--fs-3); color:var(--ink-3);
   font-weight:500;
+  white-space:nowrap;
   transition:background .12s, color .12s;
 }
 .tab:hover{ background:var(--surface-2); color:var(--ink); }
