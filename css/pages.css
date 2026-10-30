@@ -217,6 +217,38 @@
 .pub-bar-label{ font-size:var(--fs-1); color:var(--ink-3); }
 .pub-bar-val{ font-size:var(--fs-2); color:var(--ink-2); text-align:right; }
 
+/* ---------- 月历 ---------- */
+.cal{ min-width:0; }
+.cal-head{ display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); }
+.cal-label{ font-size:var(--fs-4); font-weight:600; min-width:96px; text-align:center; }
+.cal-grid{ display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; }
+.cal-wd{ text-align:center; font-size:var(--fs-1); color:var(--ink-3); padding:2px 0 4px; }
+.cal-cell{
+  min-height:52px;
+  border:1px solid var(--line-2);
+  border-radius:var(--r-1);
+  padding:3px 5px;
+  display:flex; flex-direction:column; gap:2px;
+  background:var(--surface);
+  overflow:hidden;
+}
+.cal-cell[role="button"]{ cursor:pointer; transition:border-color .12s, background .12s; }
+.cal-cell[role="button"]:hover{ border-color:var(--line-strong); background:var(--surface-2); }
+.cal-cell.cal-out{ opacity:.35; }
+.cal-cell.cal-today{ border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
+.cal-day{ font-size:var(--fs-2); color:var(--ink-2); line-height:1.4; }
+.cal-today .cal-day{ color:var(--accent); font-weight:600; }
+.cal-chips{ display:flex; gap:3px; flex-wrap:wrap; overflow:hidden; }
+.cal-chip{
+  font-size:var(--fs-1);
+  line-height:16px;
+  padding:0 4px;
+  border-radius:4px;
+  white-space:nowrap;
+  max-width:100%;
+  overflow:hidden; text-overflow:ellipsis;
+}
+
 /* ---------- play ---------- */
 .wish-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:var(--sp-3); }
 .wish-card{ display:flex; flex-direction:column; gap:3px; min-height:96px; position:relative; }

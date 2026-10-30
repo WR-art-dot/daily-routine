@@ -4,12 +4,13 @@ import { toastUndo } from '../ui/toast.js';
 import { openDrawer } from '../ui/drawer.js';
 import { confirmDialog } from '../ui/modal.js';
 import { sparkline, heatmap } from '../ui/chart.js';
+import { monthCalendar } from '../ui/monthcal.js';
 import { all, put, del } from '../core/db.js';
 import { track } from '../core/save.js';
 import { getSettings } from '../core/settings.js';
 import { BODY_PARTS, labelOf } from '../core/schema.js';
 import { exerciseSeries, prOf, lastEntryOf, weekCount, streakWeeks, heatmap as heatCells } from '../core/library.js';
-import { todayStr, shortDate } from '../core/dates.js';
+import { todayStr, shortDate, addDays, pad2 } from '../core/dates.js';
 
 let token = 0;
 let rootEl = null;
@@ -19,6 +20,7 @@ let exercises = [];
 let selectedExerciseId = null;
 let libQuery = '';
 let libPart = 'all';
+let calMonth = null;
 
 function refresh() {
   if (!rootEl || !ctxRef) return;
@@ -28,8 +30,8 @@ function refresh() {
   render(root, ctx);
 }
 
-function newWorkoutDrawer() {
-  const dateInput = h('input', { class: 'input', type: 'date', value: todayStr() });
+function newWorkoutDrawer(date = todayStr()) {
+  const dateInput = h('input', { class: 'input', type: 'date', value: date });
   const titleInput = h('input', { class: 'input', placeholder: '今天练什么，例如 上肢推' });
   const durationInput = h('input', { class: 'input', type: 'number', placeholder: '时长（分钟）', value: '' });
 
@@ -383,6 +385,55 @@ function curveCard() {
   return card;
 }
 
+function calendarMarks() {
+  const byDate = new Map();
+  for (const w of workouts) {
+    const hit = byDate.get(w.date) || { tone: 'var(--m-fitness)', chips: [], title: '' };
+    const lines = [];
+    for (const entry of w.entries || []) {
+      const ex = exercises.find((e) => e.id === entry.exerciseId);
+      lines.push(`${ex ? ex.name : '已删动作'} ${entry.sets}×${entry.reps}${entry.weight ? ` ${entry.weight}kg` : ''}${entry.rpe ? ` RPE${entry.rpe}` : ''}`);
+    }
+    hit.title = (hit.title ? hit.title + '\n' : '') + `${w.title || '训练'}（${lines.length} 个动作）\n${lines.join('\n')}`;
+    const parts = [...new Set((w.entries || []).map((en) => (exercises.find((e) => e.id === en.exerciseId) || {}).part).filter(Boolean))]
+      .map((p) => labelOf(BODY_PARTS, p));
+    hit.chips = parts.slice(0, 2).map((text) => ({ text, title: hit.title }));
+    if (parts.length > 2) hit.chips.push({ text: `+${parts.length - 2}`, title: hit.title });
+    byDate.set(w.date, hit);
+  }
+  return byDate;
+}
+
+function calendarCard() {
+  const card = h('div', { class: 'card' });
+  card.append(
+    h('div', { class: 'card-head' },
+      h('span', { class: 'card-title', text: '训练日历' }),
+      h('span', { class: 'hint', text: '色块 = 当天练过，悬停看动作与次数，点空白天可新建当天训练' })
+    ),
+    monthCalendar({
+      month: calMonth,
+      weekStartDay: getSettings().weekStart === 0 ? 0 : 1,
+      marks: calendarMarks(),
+      onPrev: () => {
+        calMonth = addDays(`${calMonth}-01`, -1).slice(0, 7);
+        refresh();
+      },
+      onNext: () => {
+        const [y, m] = calMonth.split('-').map(Number);
+        calMonth = m === 12 ? `${y + 1}-01` : `${y}-${pad2(m + 1)}`;
+        refresh();
+      },
+      onToday: () => {
+        calMonth = todayStr().slice(0, 7);
+        refresh();
+      },
+      onPick: (date) => newWorkoutDrawer(date)
+    })
+  );
+  return card;
+}
+
 async function render(root, ctx) {
   const t = ++token;
   rootEl = root;
@@ -434,6 +485,9 @@ async function render(root, ctx) {
     heatmap(heatCells(workouts, today, 12))
   );
   right.append(heat);
+
+  calMonth = calMonth || today.slice(0, 7);
+  left.append(calendarCard());
 
   root.append(h('div', { class: 'page' }, h('div', { class: 'fit-grid' }, left, right)));
 

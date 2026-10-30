@@ -2,12 +2,13 @@ import { h, icon } from '../ui/el.js';
 import { toastUndo } from '../ui/toast.js';
 import { openDrawer } from '../ui/drawer.js';
 import { sparkline } from '../ui/chart.js';
+import { monthCalendar } from '../ui/monthcal.js';
 import { all, put, del } from '../core/db.js';
 import { track } from '../core/save.js';
 import { getSettings } from '../core/settings.js';
 import { MEAL_SLOTS, labelOf } from '../core/schema.js';
 import { mealTotals, scaleFood, weightByDate, weightSeries, weightTrend } from '../core/library.js';
-import { todayStr, addDays, monthDay, weekdayCN, shortDate, relativeText } from '../core/dates.js';
+import { todayStr, addDays, monthDay, weekdayCN, shortDate, relativeText, pad2 } from '../core/dates.js';
 
 let token = 0;
 let rootEl = null;
@@ -18,6 +19,7 @@ let weights = [];
 let date = '';
 let pickerSlot = null;
 let pickerQuery = '';
+let calMonth = null;
 
 function refresh() {
   if (!rootEl || !ctxRef) return;
@@ -351,6 +353,57 @@ async function render(root, ctx) {
 
   const right = h('div', { class: 'stack' }, nutri, weightCard());
 
+  calMonth = calMonth || date.slice(0, 7);
+  const dayAgg = new Map();
+  for (const meal of meals) {
+    const items = meal.items || [];
+    if (!items.length) continue;
+    const kcal = items.reduce((s, it) => s + (it.kcal || 0), 0);
+    const slotNames = { breakfast: '早', lunch: '午', dinner: '晚', snack: '加' };
+    const hit = dayAgg.get(meal.date) || { kcal: 0, lines: [] };
+    hit.kcal += kcal;
+    hit.lines.push(`${slotNames[meal.slot] || '餐'}：${items.map((it) => it.name).join('、')}（${Math.round(kcal)} kcal）`);
+    dayAgg.set(meal.date, hit);
+  }
+  const marks = new Map();
+  for (const [d, agg] of dayAgg) {
+    marks.set(d, {
+      tone: 'var(--m-food)',
+      chips: [{ text: `${Math.round(agg.kcal)}`, title: '' }],
+      title: agg.lines.join('\n')
+    });
+  }
+
+  const calCard = h(
+    'div',
+    { class: 'card' },
+    h('div', { class: 'card-head' },
+      h('span', { class: 'card-title', text: '饮食日历' }),
+      h('span', { class: 'hint', text: '数字 = 当天记录的千卡，悬停看吃了什么，点某天跳到那天记' }
+      )
+    ),
+    monthCalendar({
+      month: calMonth,
+      weekStartDay: settings.weekStart === 0 ? 0 : 1,
+      marks,
+      onPrev: () => {
+        const [y, m] = calMonth.split('-').map(Number);
+        calMonth = m === 1 ? `${y - 1}-12` : `${y}-${pad2(m - 1)}`;
+        refresh();
+      },
+      onNext: () => {
+        const [y, m] = calMonth.split('-').map(Number);
+        calMonth = m === 12 ? `${y + 1}-01` : `${y}-${pad2(m + 1)}`;
+        refresh();
+      },
+      onToday: () => {
+        calMonth = todayStr().slice(0, 7);
+        refresh();
+      },
+      onPick: (d) => ctx.navigate(`/food?d=${d}`)
+    })
+  );
+
   root.append(
     h(
       'div',
@@ -375,7 +428,8 @@ async function render(root, ctx) {
               })
             )
           ),
-      h('div', { class: 'food-grid' }, cols, right)
+      h('div', { class: 'food-grid' }, cols, right),
+      calCard
     )
   );
 
