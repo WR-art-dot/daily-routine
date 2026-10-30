@@ -1,71 +1,93 @@
 :root{
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
-  --r-1:6px; --r-2:10px; --r-3:14px;
-  --fs-1:11px; --fs-2:12px; --fs-3:13px; --fs-4:14px; --fs-5:16px; --fs-6:20px; --fs-7:26px;
+  --r-1:6px; --r-2:10px; --r-3:14px; --r-4:20px;
+  --fs-1:11px; --fs-2:12px; --fs-3:13px; --fs-4:14px; --fs-5:16px; --fs-6:20px; --fs-7:26px; --fs-8:32px;
   --rail-w:60px; --topbar-h:44px;
   --ease:cubic-bezier(.2,.6,.3,1);
 }
 
 :root, [data-theme="light"]{
-  --bg:#f5f5f1;
+  /* 画布与层次面 */
+  --bg:#f4f3ee;
   --surface:#ffffff;
-  --surface-2:#f0f0ea;
-  --surface-3:#e8e8e1;
-  --line:#e0e0d7;
-  --line-2:#eaeae2;
-  --line-strong:#cecec3;
-  --ink:#1d1d1b;
-  --ink-2:#57574f;
-  --ink-3:#8b8b82;
-  --accent:#185fa5;
+  --surface-2:#f1f0ea;
+  --surface-3:#e9e8e0;
+  --line:#e2e0d6;
+  --line-2:#eceae2;
+  --line-strong:#ccc9bd;
+  --ink:#1c1c19;
+  --ink-2:#54544b;
+  --ink-3:#8a8a80;
+  --ink-inverse:#f7f6f2;
+
+  /* 品牌与语义色 */
+  --accent:#1c62a8;
+  --accent-hover:#18568f;
   --accent-ink:#ffffff;
-  --accent-soft:#e9f1fa;
-  --accent-line:#bcd6ef;
-  --ok:#3f7a45;
-  --ok-soft:#e8f2e8;
-  --warn:#9a5a12;
-  --warn-soft:#fbf1e2;
-  --warn-line:#ecd3ab;
-  --danger:#b03a30;
-  --danger-soft:#fbeceb;
-  --shadow:0 1px 2px rgba(20,20,18,.05), 0 10px 26px rgba(20,20,18,.07);
-  --m-today:#6b7a8f;
-  --m-media:#5b8f6b;
-  --m-dev:#7b6a9c;
-  --m-study:#9a8a4e;
-  --m-fitness:#9a6b52;
-  --m-food:#b07a3a;
-  --m-play:#4e8f8a;
+  --accent-soft:#e8f1fa;
+  --accent-line:#bfd7ee;
+  --ok:#3c7a46;
+  --ok-soft:#e7f1e7;
+  --warn:#99570f;
+  --warn-soft:#faf0e0;
+  --warn-line:#ecd2aa;
+  --danger:#ae382e;
+  --danger-soft:#faebea;
+
+  /* 阴影三层：卡片静置 / 悬浮 / 浮层 */
+  --shadow-1:0 1px 2px rgba(26,26,22,.05), 0 1px 6px rgba(26,26,22,.04);
+  --shadow-2:0 2px 4px rgba(26,26,22,.06), 0 10px 24px rgba(26,26,22,.09);
+  --shadow:0 4px 12px rgba(26,26,22,.12), 0 20px 48px rgba(26,26,22,.18);
+  --card-shadow:var(--shadow-1);
+  --card-shadow-hover:var(--shadow-2);
+
+  /* 七个模块色，饱和度略提，供圆点/徽标/选中底使用 */
+  --m-today:#5c7d99;
+  --m-media:#3f8a56;
+  --m-dev:#7763a3;
+  --m-study:#a08a3c;
+  --m-fitness:#b46a45;
+  --m-food:#c07b2e;
+  --m-play:#35948c;
 }
 
 [data-theme="dark"]{
-  --bg:#161719;
-  --surface:#1e2023;
-  --surface-2:#25272b;
-  --surface-3:#2b2e33;
-  --line:#32353a;
-  --line-2:#292c30;
-  --line-strong:#41454b;
-  --ink:#e9e9e4;
-  --ink-2:#a9a9a2;
-  --ink-3:#7c7c76;
-  --accent:#6ba7e2;
-  --accent-ink:#0f1a26;
-  --accent-soft:#1b2a3a;
-  --accent-line:#2f4a68;
-  --ok:#7fb583;
+  --bg:#141518;
+  --surface:#1d1f23;
+  --surface-2:#24262b;
+  --surface-3:#2c2f34;
+  --line:#303338;
+  --line-2:#282b2f;
+  --line-strong:#454951;
+  --ink:#eae9e4;
+  --ink-2:#adada5;
+  --ink-3:#7e7e77;
+  --ink-inverse:#141518;
+
+  --accent:#6fabe3;
+  --accent-hover:#84b8e9;
+  --accent-ink:#0e1a26;
+  --accent-soft:#1c2b3c;
+  --accent-line:#31527a;
+  --ok:#83b887;
   --ok-soft:#1e2b1f;
-  --warn:#d9a05a;
+  --warn:#dba55e;
   --warn-soft:#2b2318;
-  --warn-line:#4a3a25;
-  --danger:#e08a80;
-  --danger-soft:#2e1f1e;
-  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 26px rgba(0,0,0,.32);
-  --m-today:#8d9cb0;
-  --m-media:#7fb08d;
-  --m-dev:#a294c4;
-  --m-study:#c0ae6e;
-  --m-fitness:#c09074;
-  --m-food:#d3a163;
-  --m-play:#6fb3ad;
+  --warn-line:#4b3b26;
+  --danger:#e28c82;
+  --danger-soft:#2f1f1e;
+
+  --shadow-1:0 1px 2px rgba(0,0,0,.24), 0 2px 8px rgba(0,0,0,.20);
+  --shadow-2:0 2px 6px rgba(0,0,0,.30), 0 12px 28px rgba(0,0,0,.34);
+  --shadow:0 6px 16px rgba(0,0,0,.42), 0 24px 56px rgba(0,0,0,.5);
+  --card-shadow:var(--shadow-1);
+  --card-shadow-hover:var(--shadow-2);
+
+  --m-today:#8ba0b8;
+  --m-media:#7ab389;
+  --m-dev:#a292c8;
+  --m-study:#c3ae6a;
+  --m-fitness:#c98f70;
+  --m-food:#d29c5c;
+  --m-play:#63b3ab;
 }
