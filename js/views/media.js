@@ -27,6 +27,74 @@ function wordCount(body) {
   return (body || '').replace(/\s/g, '').length;
 }
 
+function publishStatsCard(pubItems) {
+  const sorted = [...pubItems]
+    .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+  const shown = sorted.slice(0, 6);
+  const rest = sorted.length - shown.length;
+
+  const totalViews = sorted.reduce((s, i) => s + (i.stats?.views || 0), 0);
+  const totalLikes = sorted.reduce((s, i) => s + (i.stats?.likes || 0), 0);
+  const rate = totalViews ? `${((totalLikes / totalViews) * 100).toFixed(1)}%` : '—';
+  const maxViews = Math.max(1, ...sorted.map((i) => i.stats?.views || 0));
+  const maxLikes = Math.max(1, ...sorted.map((i) => i.stats?.likes || 0));
+
+  const summary = h('div', { class: 'pub-summary' });
+  [
+    ['总阅读', totalViews.toLocaleString('zh-CN')],
+    ['总互动', totalLikes.toLocaleString('zh-CN')],
+    ['平均互动率', rate]
+  ].forEach(([k, v]) => {
+    summary.append(h('div', { class: 'pub-num' }, h('span', { class: 'pub-num-label', text: k }), h('span', { class: 'pub-num-value num', text: v })));
+  });
+
+  const rows = h('div', { class: 'pub-rows' });
+  shown.forEach((item) => {
+    const views = item.stats?.views || 0;
+    const likes = item.stats?.likes || 0;
+    rows.append(
+      h(
+        'div',
+        { class: 'pub-row' },
+        h(
+          'div',
+          { class: 'pub-row-head' },
+          h('span', { class: 'pub-row-title', text: item.title || '未命名' }),
+          h('span', { class: 'pub-row-date hint', text: item.publishedAt ? shortDate(item.publishedAt) : '—' })
+        ),
+        h(
+          'div',
+          { class: 'pub-bars' },
+          h(
+            'div',
+            { class: 'pub-bar' },
+            h('span', { class: 'pub-bar-label', text: '阅读' }),
+            h('div', { class: 'bar' }, h('i', { style: { width: `${(views / maxViews) * 100}%`, background: 'var(--m-media)' } })),
+            h('span', { class: 'pub-bar-val num', text: views.toLocaleString('zh-CN') })
+          ),
+          h(
+            'div',
+            { class: 'pub-bar' },
+            h('span', { class: 'pub-bar-label', text: '互动' }),
+            h('div', { class: 'bar' }, h('i', { style: { width: `${(likes / maxLikes) * 100}%`, background: 'var(--accent)' } })),
+            h('span', { class: 'pub-bar-val num', text: likes.toLocaleString('zh-CN') })
+          )
+        )
+      )
+    );
+  });
+  if (rest > 0) rows.append(h('div', { class: 'hint', style: { padding: '2px 2px 0' }, text: `还有 ${rest} 篇未显示，按发布时间只列最近 6 篇。` }));
+
+  const card = h(
+    'section',
+    { class: 'card pub-stats', 'data-card': 'pub-stats' },
+    h('div', { class: 'card-head' }, h('span', { class: 'card-title', text: '发布数据' }), h('span', { class: 'count', text: `${sorted.length} 篇` })),
+    summary,
+    rows
+  );
+  return card;
+}
+
 function readingMinutes(n) {
   return Math.max(1, Math.round(n / 400));
 }
@@ -387,6 +455,9 @@ async function render(root, ctx) {
       )
     );
   }
+
+  const pubItems = visible.filter((i) => i.status === 'published');
+  if (pubItems.length) page.append(publishStatsCard(pubItems));
 
   page.append(board);
   root.append(page);
