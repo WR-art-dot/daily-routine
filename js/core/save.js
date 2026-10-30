@@ -2,6 +2,7 @@ let pending = 0;
 let dot = null;
 let resetTimer = null;
 const subs = new Set();
+const debouncedAll = new Set();
 
 const TITLES = {
   idle: '已保存',
@@ -82,5 +83,11 @@ export function autosave(fn, ms = 400) {
     if (timer) clearTimeout(timer);
     timer = null;
   };
+  debouncedAll.add(debounced);
   return debounced;
+}
+
+/** 手动保存：把所有还挂在 debounce 里的写入立刻落库 */
+export function flushAll() {
+  return Promise.all([...debouncedAll].map((d) => d.flush()));
 }

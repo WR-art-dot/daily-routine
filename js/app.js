@@ -1,7 +1,7 @@
 import { RAIL, SETTINGS_ROUTE, start, navigate } from './core/router.js';
 import { initSettings, applyTheme, watchSystemTheme } from './core/settings.js';
 import { initSession, currentToday } from './core/session.js';
-import { initSaveDot, pendingCount } from './core/save.js';
+import { initSaveDot, pendingCount, flushAll } from './core/save.js';
 import { h, icon, isTyping } from './ui/el.js';
 import { closeDrawer, isDrawerOpen } from './ui/drawer.js';
 import { isModalOpen } from './ui/modal.js';
@@ -118,6 +118,13 @@ function bindKeys() {
       return;
     }
 
+    if (mod && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      await flushAll();
+      toast('已保存');
+      return;
+    }
+
     if (mod && e.key.toLowerCase() === 'z' && !e.shiftKey) {
       if (isTyping(e.target)) return;
       const label = undoLast();
@@ -174,6 +181,11 @@ async function boot() {
   bindKeys();
   bindSaveGuard();
   checkRollover();
+
+  document.getElementById('btn-save').addEventListener('click', async () => {
+    await flushAll();
+    toast('已保存');
+  });
 
   start(handleRoute);
 
