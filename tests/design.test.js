@@ -14,8 +14,12 @@ function themeVars(block) {
   return vars;
 }
 
-function extractTheme(marker) {
-  const start = tokens.indexOf(marker);
+function extractTheme(marker, occurrence = 1) {
+  let start = -1;
+  for (let i = 0; i < occurrence; i++) {
+    start = tokens.indexOf(marker, start + 1);
+    if (start < 0) break;
+  }
   assert.ok(start >= 0, `tokens.css 缺少主题块 ${marker}`);
   const open = tokens.indexOf('{', start);
   let depth = 1, end = open;
@@ -29,8 +33,18 @@ function extractTheme(marker) {
 
 const light = themeVars(extractTheme(':root, [data-theme="light"]'));
 const dark = themeVars(extractTheme('[data-theme="dark"]'));
-// 结构性令牌（间距/圆角/字阶/尺寸）在文件顶部的 :root 块里，不分主题
-const structural = themeVars(extractTheme(':root{'));
+// 结构性令牌（间距/圆角/字阶/尺寸）分布在文件顶部的多个 :root 块里，不分主题
+const structural = (() => {
+  const merged = {};
+  let from = 0;
+  for (let i = 1; i <= 8; i++) {
+    const hit = tokens.indexOf(':root{', from);
+    if (hit < 0) break;
+    Object.assign(merged, themeVars(extractTheme(':root{', i)));
+    from = hit + 1;
+  }
+  return merged;
+})();
 
 function hexToRgb(hex) {
   const h = hex.replace('#', '');

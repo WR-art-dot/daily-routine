@@ -1,7 +1,7 @@
 :root{
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
-  --r-1:6px; --r-2:10px; --r-3:14px; --r-4:20px;
-  --fs-1:11px; --fs-2:12px; --fs-3:13px; --fs-4:14px; --fs-5:16px; --fs-6:20px; --fs-7:26px; --fs-8:32px;
+  --r-1:6px; --r-2:10px; --r-3:14px; --r-4:20px; --r-5:24px; --r-6:32px;
+  --fs-1:11px; --fs-2:12px; --fs-3:13px; --fs-4:14px; --fs-5:16px; --fs-6:20px; --fs-7:26px; --fs-8:32px; --fs-9:40px; --fs-10:56px;
   --rail-w:60px; --topbar-h:44px;
   --ease:cubic-bezier(.2,.6,.3,1);
 }
@@ -33,6 +33,29 @@
   --warn-line:#ecd2aa;
   --danger:#ae382e;
   --danger-soft:#faebea;
+
+  /* 晨雾草丘：只用于首页的自然场景与低饱和功能色 */
+  --mm-sky:#b3c8da;
+  --mm-sky-top:#c3d5e4;
+  --mm-sky-bottom:#e6eae2;
+  --mm-sage:#a9bfab;
+  --mm-sage-deep:#7d9584;
+  --mm-meadow:#94ac95;
+  --mm-meadow-deep:#6f8a78;
+  --mm-cream:#f8f7f3;
+  --mm-ink:#394639;
+  --mm-ink-soft:#5d6f64;
+  --mm-lake:#b5ccd2;
+  --mm-lake-deep:#93b0b4;
+  --mm-glass:rgba(255,255,255,.55);
+  --mm-glass-strong:rgba(255,255,255,.7);
+  --mm-glass-border:rgba(255,255,255,.66);
+  --mm-shadow:0 24px 70px rgba(65,86,73,.13);
+  --mm-food:#cfa7a3;
+  --mm-fitness:#9fb9cd;
+  --mm-study:#a9b989;
+  --mm-flower:#e0c0c4;
+  --mm-flower-alt:#b3c4d8;
 
   /* 阴影三层：卡片静置 / 悬浮 / 浮层 */
   --shadow-1:0 1px 2px rgba(26,26,22,.05), 0 1px 6px rgba(26,26,22,.04);
@@ -76,6 +99,28 @@
   --warn-line:#4b3b26;
   --danger:#e28c82;
   --danger-soft:#2f1f1e;
+
+  --mm-sky:#2f4351;
+  --mm-sky-top:#384e5c;
+  --mm-sky-bottom:#33403c;
+  --mm-sage:#5c7566;
+  --mm-sage-deep:#465c51;
+  --mm-meadow:#4a6354;
+  --mm-meadow-deep:#3a5044;
+  --mm-cream:#1d2620;
+  --mm-ink:#dde5dd;
+  --mm-ink-soft:#a9b8ac;
+  --mm-lake:#40626b;
+  --mm-lake-deep:#2f4a52;
+  --mm-glass:rgba(30,41,35,.55);
+  --mm-glass-strong:rgba(36,48,41,.72);
+  --mm-glass-border:rgba(196,214,201,.16);
+  --mm-shadow:0 24px 70px rgba(0,0,0,.45);
+  --mm-food:#a9807c;
+  --mm-fitness:#708ca1;
+  --mm-study:#7f9463;
+  --mm-flower:#b28a90;
+  --mm-flower-alt:#8094a8;
 
   --shadow-1:0 1px 2px rgba(0,0,0,.24), 0 2px 8px rgba(0,0,0,.20);
   --shadow-2:0 2px 6px rgba(0,0,0,.30), 0 12px 28px rgba(0,0,0,.34);

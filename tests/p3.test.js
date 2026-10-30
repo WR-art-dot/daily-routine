@@ -97,7 +97,7 @@ test('P3 · 六个摘要各自的取值规则', () => {
   assert.equal(wish.active, 2);
 });
 
-test('P3 · 首页渲染出进度、今日计划与六张卡', async () => {
+test('P3 · 首页渲染出进度、今日计划与三个模块入口', async () => {
   await resetAll();
   await initSettings();
   await saveSettings({ homeCards: ['media', 'dev', 'study', 'fitness', 'food', 'play'], hiddenCards: [] });
@@ -109,21 +109,20 @@ test('P3 · 首页渲染出进度、今日计划与六张卡', async () => {
   await put('media', { id: 'm', title: '一篇稿子', status: 'drafting', plannedDate: addDays(today, 2) });
   await put('projects', { id: 'p', name: 'api-service', status: 'active' });
   await put('bugs', { id: 'bug', projectId: 'p', title: '登录超时', status: 'open' });
-  await put('refs', { id: 'r', title: '环境想象', status: 'reading' });
+  await put('refs', { id: 'r', title: '环境想象', status: 'reading', progress: 40 });
   await put('wishes', { id: 'w', title: '打完第三章', status: 'want', weekPinned: true });
 
   const { root, meta } = await mount(homeView);
   assert.ok(meta[0].includes('10 月 30 日'), `顶部应显示日期，实际 ${meta[0]}`);
   assert.ok(root.textContent.includes('1 / 2'), '应显示完成进度');
-  assert.equal(root.querySelectorAll('.home-card').length, 6, '应有六张摘要卡');
-  const ids = [...root.querySelectorAll('.home-card')].map((c) => c.dataset.card);
-  assert.deepEqual(ids, ['media', 'dev', 'study', 'fitness', 'food', 'play']);
 
-  assert.ok(root.textContent.includes('一篇稿子'), '自媒体卡应显示最该推进的选题');
-  assert.ok(root.textContent.includes('api-service'), '开发卡应显示项目名');
-  assert.ok(root.textContent.includes('1 个未解决 bug'), '开发卡应显示未解决 bug 数');
-  assert.ok(root.textContent.includes('环境想象'), '学习卡应显示在读文献');
-  assert.ok(root.textContent.includes('打完第三章'), '娱乐卡应显示钉住的心愿');
+  const ids = [...root.querySelectorAll('.mm-module-card')].map((c) => c.dataset.card);
+  assert.deepEqual(ids, ['study', 'fitness', 'food'], '首页应只呈现学习/运动/饮食三个入口');
+
+  assert.ok(root.textContent.includes('环境想象'), '学习入口应显示在读文献');
+  assert.ok(root.textContent.includes('40%'), '学习入口应显示阅读进度');
+  assert.ok(root.textContent.includes('今天还没有训练记录'), '运动入口应显示当日训练状态');
+  assert.ok(root.textContent.includes('餐记录'), '饮食入口应显示餐数');
 });
 
 test('P3 · 首页勾选与今日计划双向同步', async () => {
@@ -146,14 +145,14 @@ test('P3 · 首页勾选与今日计划双向同步', async () => {
   assert.ok(todayCheck.classList.contains('on'), '今日计划页应显示为已完成');
 });
 
-test('P3 · 首页卡片顺序与隐藏来自设置', async () => {
+test('P3 · 首页三入口的顺序与隐藏来自设置', async () => {
   await resetAll();
   await initSettings();
-  await saveSettings({ homeCards: ['play', 'food', 'media', 'dev', 'study', 'fitness'], hiddenCards: ['study'] });
+  await saveSettings({ homeCards: ['fitness', 'food', 'media', 'dev', 'study'], hiddenCards: ['study'] });
 
   const { root } = await mount(homeView);
-  const ids = [...root.querySelectorAll('.home-card')].map((c) => c.dataset.card);
-  assert.deepEqual(ids, ['play', 'food', 'media', 'dev', 'fitness']);
+  const ids = [...root.querySelectorAll('.mm-module-card')].map((c) => c.dataset.card);
+  assert.deepEqual(ids, ['fitness', 'food'], '被隐藏的模块不应出现在首页');
 });
 
 test('P3 · 跨天且有遗留时给出提示', async () => {
@@ -171,15 +170,26 @@ test('P3 · 跨天且有遗留时给出提示', async () => {
   session.dayChanged = false;
 });
 
+test('P3 · 设置里缺少三入口时仍补齐', async () => {
+  await resetAll();
+  await initSettings();
+  await saveSettings({ homeCards: ['media', 'dev'], hiddenCards: [] });
+
+  const { root } = await mount(homeView);
+  const ids = [...root.querySelectorAll('.mm-module-card')].map((c) => c.dataset.card);
+  assert.deepEqual(ids, ['food', 'fitness', 'study'], '设置里没有也要保证三条日常入口存在');
+});
+
 test('P3 · 空数据时首页不塌陷', async () => {
   await resetAll();
   await initSettings();
   await saveSettings({ homeCards: ['media', 'dev', 'study', 'fitness', 'food', 'play'], hiddenCards: [] });
   const { root } = await mount(homeView);
-  assert.equal(root.querySelectorAll('.home-card').length, 6);
-  assert.ok(root.textContent.includes('今天还没有安排'));
-  assert.ok(root.textContent.includes('还没有选题'));
-  assert.ok(root.textContent.includes('清单还空着'));
+  assert.equal(root.querySelectorAll('.mm-module-card').length, 3);
+  assert.ok(root.textContent.includes('今天还没有安排'), '空计划应有引导文案');
+  assert.ok(root.textContent.includes('从第一餐开始照顾自己'), '饮食入口空态应有引导');
+  assert.ok(root.textContent.includes('还没有正在阅读的文献'), '学习入口空态应有引导');
+  assert.ok(root.querySelector('.mm-hero-title'), '空数据也要有 hero 区');
 });
 
 test.after(() => teardown(dom));
