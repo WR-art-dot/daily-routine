@@ -1,0 +1,12 @@
+# 仓库内统一存 LF，检出也保持 LF，工作区不会被悄悄改写
+* text=auto eol=lf
+
+# 例外：批处理必须 CRLF。cmd 解析 if 块与 goto 标签时对换行敏感
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# 二进制，不做换行符转换
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary

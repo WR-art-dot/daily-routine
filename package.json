@@ -1,0 +1,15 @@
+{
+  "name": "lifeapp",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Personal work & life app, local only.",
+  "scripts": {
+    "test": "node --test",
+    "start": "node serve.js"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.7",
+    "jsdom": "^30.1.3"
+  }
+}

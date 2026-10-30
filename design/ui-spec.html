@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人工作生活 App · 页面结构与交互设计 v1</title>
+<style>
+  :root{
+    --ink:#1e1e1c; --ink2:#56564f; --ink3:#8b8b82;
+    --line:#dbdbd3; --line2:#eaeaE2; --fill:#fbfbf8; --fill2:#f3f3ed;
+    --accent:#185fa5; --accent-bg:#eaf2fb; --accent-line:#b5d4f4;
+    --warn:#a3520f; --warn-bg:#fdf4e8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:#f6f6f2; color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14px; line-height:1.68; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:grid; grid-template-columns:190px 1fr; gap:48px; max-width:1160px; margin:0 auto; padding:44px 32px 90px;}
+  nav{position:sticky; top:44px; align-self:start; font-size:12.5px;}
+  nav .navtitle{font-size:11px; letter-spacing:.08em; color:var(--ink3); margin-bottom:10px;}
+  nav a{display:block; color:var(--ink2); text-decoration:none; padding:4px 0 4px 0; border-left:2px solid transparent; padding-left:10px; margin-left:-10px;}
+  nav a:hover{color:var(--ink); border-left-color:var(--line);}
+  main{min-width:0;}
+  h1{font-size:24px; line-height:1.35; margin:0 0 8px; font-weight:600; letter-spacing:-.01em;}
+  .sub{color:var(--ink2); font-size:13.5px; margin-bottom:34px;}
+  section{margin:0 0 54px; scroll-margin-top:24px;}
+  h2{font-size:17px; font-weight:600; margin:0 0 4px; padding-top:12px; border-top:1px solid var(--line);}
+  h2 .no{color:var(--ink3); font-weight:400; font-size:12.5px; margin-right:10px; font-variant-numeric:tabular-nums;}
+  h3{font-size:13.5px; font-weight:600; margin:22px 0 6px; color:var(--ink);}
+  p{margin:8px 0; color:var(--ink2);}
+  ul{margin:8px 0; padding-left:18px; color:var(--ink2);}
+  li{margin:3px 0;}
+  code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; background:#efefe8; padding:1px 5px; border-radius:4px; color:#3b3b36;}
+  table{border-collapse:collapse; width:100%; font-size:12.5px; margin:12px 0;}
+  th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line2); vertical-align:top; color:var(--ink2);}
+  th{color:var(--ink3); font-weight:500; font-size:11.5px; letter-spacing:.03em; background:#fafaf6;}
+  td b{color:var(--ink); font-weight:500;}
+
+  /* wireframe */
+  .wf{background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; margin:16px 0 10px; font-size:11px; color:var(--ink2);}
+  .wf-top{display:flex; align-items:center; gap:10px; padding:7px 12px; background:#faf9f4; border-bottom:1px solid var(--line2); font-size:10.5px; color:var(--ink3);}
+  .wf-top .u{font-family:ui-monospace,Consolas,monospace; color:var(--ink2);}
+  .wf-top .sp{flex:1;}
+  .wf-body{padding:12px; display:flex; flex-direction:column; gap:9px;}
+  .b{border:1px dashed var(--line); border-radius:8px; padding:8px 10px; background:var(--fill); min-width:0;}
+  .b.s{border-style:solid; background:#fff;}
+  .b.t{background:var(--fill2);}
+  .b.a{border-color:var(--accent-line); background:var(--accent-bg);}
+  .b.w{border-color:#eccdab; background:var(--warn-bg);}
+  .g12{display:grid; grid-template-columns:repeat(12,1fr); gap:9px;}
+  .g3{display:grid; grid-template-columns:repeat(3,1fr); gap:9px;}
+  .g4{display:grid; grid-template-columns:repeat(4,1fr); gap:9px;}
+  .sp2{grid-column:span 2}.sp3{grid-column:span 3}.sp4{grid-column:span 4}
+  .sp5{grid-column:span 5}.sp6{grid-column:span 6}.sp7{grid-column:span 7}
+  .sp8{grid-column:span 8}.sp12{grid-column:span 12}
+  .row{display:flex; gap:7px; align-items:center;}
+  .col{display:flex; flex-direction:column; gap:6px;}
+  .name{font-size:11.5px; font-weight:500; color:var(--ink);}
+  .lbl{font-size:10px; color:var(--ink3); letter-spacing:.02em;}
+  .ph{height:6px; border-radius:3px; background:#ececE4;}
+  .ph.d{background:#e2e2d8;}
+  .chip{display:inline-block; border:1px solid var(--line); border-radius:99px; padding:0 7px; font-size:10px; color:var(--ink2); background:#fff; line-height:17px;}
+  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .bx{width:11px; height:11px; border:1px solid #c6c6bc; border-radius:3px; flex:none; display:inline-block;}
+  .bx.on{background:var(--accent); border-color:var(--accent);}
+  .dotm{width:6px; height:6px; border-radius:50%; flex:none;}
+  .drag{color:#c2c2b8; font-size:11px; letter-spacing:1px;}
+  .arw{color:#b9b9af;}
+  .mini{font-size:10px; color:var(--ink3);}
+  .note{background:#fff; border-left:2px solid var(--accent); padding:10px 14px; margin:14px 0; font-size:12.5px; color:var(--ink2); border-radius:0 6px 6px 0;}
+  .note b{color:var(--ink);}
+  .kbd{display:inline-block; font-family:ui-monospace,Consolas,monospace; font-size:11px; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 5px; background:#fff; color:var(--ink2);}
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:26px;}
+  @media (max-width:900px){ .wrap{grid-template-columns:1fr; padding:24px 18px 60px;} nav{display:none;} .cols2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="navtitle">目录</div>
+  <a href="#s1">01 全局框架</a>
+  <a href="#s2">02 交互总则</a>
+  <a href="#s3">03 首页总览</a>
+  <a href="#s4">04 今日计划</a>
+  <a href="#s5">05 自媒体</a>
+  <a href="#s6">06 开发工作</a>
+  <a href="#s7">07 学习工作</a>
+  <a href="#s8">08 运动计划</a>
+  <a href="#s9">09 饮食计划</a>
+  <a href="#s10">10 游戏娱乐</a>
+  <a href="#s11">11 数据与设置</a>
+  <a href="#s12">12 键盘与状态</a>
+  <a href="#s13">13 待你决定</a>
+</nav>
+
+<main>
+  <h1>个人工作生活 App<br>页面结构与交互设计 v1</h1>
+  <div class="sub">仅供本机浏览器使用，无登录、无联网。灰阶线框表示结构，不表示最终配色。</div>
+
+  <table>
+    <tr><th style="width:90px">路由</th><th style="width:110px">页面</th><th style="width:120px">主视图形态</th><th>核心操作</th></tr>
+    <tr><td><code>#/home</code></td><td><b>首页总览</b></td><td>网格拼贴</td><td>勾任务、记备忘、看六卡</td></tr>
+    <tr><td><code>#/today</code></td><td><b>今日计划</b></td><td>时间轴清单 + 侧栏</td><td>增删排序、加入模块条目</td></tr>
+    <tr><td><code>#/media</code></td><td><b>自媒体</b></td><td>四列看板 + 抽屉</td><td>拖拽换状态、写稿、记发布</td></tr>
+    <tr><td><code>#/dev</code></td><td><b>开发工作</b></td><td>主从双栏 + 标签页</td><td>项目管理、任务、bug、日志</td></tr>
+    <tr><td><code>#/study</code></td><td><b>学习工作</b></td><td>日程条 + 表 + 详情</td><td>文献状态、笔记、组会</td></tr>
+    <tr><td><code>#/fitness</code></td><td><b>运动计划</b></td><td>日志堆叠 + 动作库</td><td>记组数重量、看 PR 曲线</td></tr>
+    <tr><td><code>#/food</code></td><td><b>饮食计划</b></td><td>四餐分栏 + 营养栏</td><td>记三餐、算营养、称体重</td></tr>
+    <tr><td><code>#/play</code></td><td><b>游戏娱乐</b></td><td>卡片流</td><td>记心愿、随机抽、钉本周</td></tr>
+    <tr><td><code>#/settings</code></td><td><b>数据与设置</b></td><td>分区列表</td><td>导出导入、目标、词库</td></tr>
+  </table>
+
+  <!-- 01 -->
+  <section id="s1">
+    <h2><span class="no">01</span>全局框架</h2>
+    <p>所有页面共用同一副骨架：左侧 60px 图标栏、顶部 44px 上下文条、中间内容区。内容区最大宽度 1440px，两侧留 32px。窗口窄于 1100px 时左栏收成纯图标，窄于 900px 时给一句「建议放大窗口」，不做手机布局。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="dot" style="width:6px;height:6px;border-radius:50%;background:#d8d8d0"></span><span class="u">#/home</span><span class="sp"></span><span>本地 · 已保存</span></div>
+      <div class="wf-body" style="flex-direction:row; gap:9px;">
+        <div class="b t col" style="width:62px; flex:none; align-items:center; gap:9px; padding:10px 4px;">
+          <div class="b a" style="width:34px;height:26px;padding:0"></div>
+          <div class="b" style="width:34px;height:26px;padding:0;border-style:solid;background:#fff"></div>
+          <div class="b" style="width:34px;height:26px;padding:0;border-style:solid;background:#fff"></div>
+          <div class="b" style="width:34px;height:26px;padding:0;border-style:solid;background:#fff"></div>
+          <div class="b" style="width:34px;height:26px;padding:0;border-style:solid;background:#fff"></div>
+          <div class="b" style="width:34px;height:26px;padding:0;border-style:solid;background:#fff"></div>
+          <div class="mini">…共 8</div>
+          <div class="b" style="width:34px;height:26px;padding:0;border-style:solid;background:#fff;margin-top:14px"></div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:9px; min-width:0;">
+          <div class="b s row" style="padding:6px 10px;">
+            <span class="name">首页总览</span>
+            <span class="lbl">星期五 · 10 月 30 日</span>
+            <span style="flex:1"></span>
+            <span class="chip">搜索 ⌘K</span>
+            <span class="dotm" style="background:#7fb069"></span>
+          </div>
+          <div class="b" style="height:96px; display:flex; align-items:center; justify-content:center; background:#fcfcfa;">
+            <span class="lbl">页面内容区 · 最大 1440px 居中</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>左栏顺序固定：首页、今日、自媒体、开发、学习、运动、饮食、娱乐；设置隔离在底部。</li>
+      <li>左栏图标 hover 出名称气泡，当前页图标左侧有 2px 竖条。</li>
+      <li>顶部条只放两样东西：页面名 + 全局搜索，右侧一个保存状态点。不放开着无用的按钮。</li>
+      <li>页面切换无整屏动画，只做 120ms 淡入。切页不丢滚动位置（同一次会话内记住）。</li>
+    </ul>
+  </section>
+
+  <!-- 02 -->
+  <section id="s2">
+    <h2><span class="no">02</span>交互总则</h2>
+    <p>八条规则，八个页面都遵守。写下来是为了后面每个模块不用重复定义。</p>
+    <ul>
+      <li><b>没有保存按钮。</b>输入停顿 400ms 或失焦即写入本地库。任何位置刷新，内容都还在。</li>
+      <li><b>新增一律行内。</b>每个列表最后一行就是输入框，回车提交并保持焦点，可连续录入；Esc 退出。</li>
+      <li><b>编辑靠点击。</b>点文字直接变输入框，<span class="kbd">Enter</span> 存、<span class="kbd">Esc</span> 撤回原值。</li>
+      <li><b>删除分级。</b>单行条目 hover 出 ×，点了即删，底部弹 5 秒「已删除 · 撤销」；项目、文稿、整份训练记录这类大对象要二次确认。</li>
+      <li><b>次要操作藏起来。</b>列表项静止时只显示内容，hover 才浮出删除、移动、复制。</li>
+      <li><b>空状态说人话。</b>一句话加一个按钮，不用插画、不用大段引导文案。</li>
+      <li><b>模态框只在两处出现：</b>导入数据、清空模块。其余全部用抽屉或行内表单。</li>
+      <li><b>跨天处理。</b>打开页面发现上次会话是昨天，首页顶部出一条窄提示「昨天还有 2 条没做完 →」，点进今日计划查看，不自动搬。</li>
+    </ul>
+  </section>
+
+  <!-- 03 -->
+  <section id="s3">
+    <h2><span class="no">03</span>首页总览</h2>
+    <p>一眼看完今天。三块内容：今日计划（可勾）、快速备忘（可写）、六个模块摘要（可跳）。六张卡高度统一 132px，保证网格整齐；卡片内部结构各不相同。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/home</span><span class="sp"></span><span>星期五 10/30</span></div>
+      <div class="wf-body">
+        <div class="g12">
+          <div class="b s sp7 row" style="justify-content:space-between;">
+            <span class="name">10 月 30 日 星期五</span>
+            <span class="lbl">第 44 周 · 距月底 2 天</span>
+          </div>
+          <div class="b s sp5">
+            <div class="row" style="justify-content:space-between;"><span class="lbl">今日完成</span><span class="mini">3 / 7</span></div>
+            <div class="ph d" style="margin-top:6px"><div class="ph" style="width:43%;background:#185fa5"></div></div>
+          </div>
+        </div>
+
+        <div class="g12">
+          <div class="b s sp7">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px;"><span class="name">今日计划</span><span class="mini">打开完整页 <span class="arw">→</span></span></div>
+            <div class="row" style="padding:3px 0;"><span class="bx on"></span><span style="text-decoration:line-through;color:#a3a39a">改第三章提纲</span><span style="flex:1"></span><span class="dotm" style="background:#8f9bb3"></span></div>
+            <div class="row" style="padding:3px 0;"><span class="bx on"></span><span style="text-decoration:line-through;color:#a3a39a">跑步 5km</span><span style="flex:1"></span><span class="dotm" style="background:#b39a8f"></span></div>
+            <div class="row" style="padding:3px 0;"><span class="bx"></span><span>写公众号初稿</span><span style="flex:1"></span><span class="dotm" style="background:#8fb3a0"></span></div>
+            <div class="row" style="padding:3px 0;"><span class="bx"></span><span>修 api-service 的分页 bug</span><span style="flex:1"></span><span class="dotm" style="background:#a99bb3"></span></div>
+            <div class="row" style="padding:3px 0;"><span class="bx"></span><span>读 Buell 第二章</span><span style="flex:1"></span><span class="dotm" style="background:#b3ae8f"></span></div>
+            <div class="row" style="padding:5px 0 0; border-top:1px dashed var(--line2); margin-top:4px;"><span class="mini">＋ 加一件事，回车即存</span></div>
+          </div>
+
+          <div class="b s sp5">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px;"><span class="name">快速备忘</span><span class="mini">3 条</span></div>
+            <div class="row" style="padding:3px 0;"><span class="dotm" style="background:#d6d6cc"></span><span>查一下 Coetzee 那篇的页码</span><span style="flex:1"></span><span class="mini">↗</span></div>
+            <div class="row" style="padding:3px 0;"><span class="dotm" style="background:#d6d6cc"></span><span>买蛋白粉（香草）</span><span style="flex:1"></span><span class="mini">↗</span></div>
+            <div class="row" style="padding:3px 0;"><span class="dotm" style="background:#d6d6cc"></span><span>组会想问问老师 17BWW084 的框架</span><span style="flex:1"></span><span class="mini">↗</span></div>
+            <div class="row" style="padding:5px 0 0; border-top:1px dashed var(--line2); margin-top:4px;"><span class="mini">＋ 随手记一句</span></div>
+          </div>
+        </div>
+
+        <div class="g3">
+          <div class="b s">
+            <div class="row" style="justify-content:space-between"><span class="name">自媒体</span><span class="mini"><span class="arw">→</span></span></div>
+            <div style="margin-top:4px">《不可食的动物》初稿</div>
+            <div class="mini">写作中 · 计划 11/02 发</div>
+            <div class="mini" style="margin-top:4px">＋ 新选题</div>
+          </div>
+          <div class="b s">
+            <div class="row" style="justify-content:space-between"><span class="name">开发</span><span class="mini"><span class="arw">→</span></span></div>
+            <div style="margin-top:4px">api-service</div>
+            <div class="mini">进行中 · 3 个未解决 bug</div>
+            <div class="mini" style="margin-top:4px">今天未写日志</div>
+          </div>
+          <div class="b s">
+            <div class="row" style="justify-content:space-between"><span class="name">学习</span><span class="mini"><span class="arw">→</span></span></div>
+            <div style="margin-top:4px">Buell《环境想象》第二章</div>
+            <div class="mini">在读 40% · 待读 12 篇</div>
+            <div class="mini" style="margin-top:4px">组会 3 天后</div>
+          </div>
+          <div class="b s">
+            <div class="row" style="justify-content:space-between"><span class="name">运动</span><span class="mini"><span class="arw">→</span></span></div>
+            <div style="margin-top:4px">今日：上肢推</div>
+            <div class="mini">本周 3 / 4 次 · 连续 6 周</div>
+            <div class="mini" style="margin-top:4px">＋ 直接记一条</div>
+          </div>
+          <div class="b s">
+            <div class="row" style="justify-content:space-between"><span class="name">饮食</span><span class="mini"><span class="arw">→</span></span></div>
+            <div style="margin-top:4px">已记 2 餐 · 1 240 kcal</div>
+            <div class="mini">蛋白 78 / 120 g</div>
+            <div class="mini" style="margin-top:4px">＋ 记一餐</div>
+          </div>
+          <div class="b s">
+            <div class="row" style="justify-content:space-between"><span class="name">娱乐</span><span class="mini"><span class="arw">→</span></span></div>
+            <div style="margin-top:4px">本周挑了 2 件</div>
+            <div class="mini">打完《极乐迪斯科》第三章</div>
+            <div class="mini" style="margin-top:4px">随机抽一条</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>勾选首页任务，改动的是今日计划里的同一条记录，两个页面共享一份数据，不是副本。</li>
+      <li>备忘行尾 <b>↗</b> 把这条转成任务（选日期与模块），或直接删除。</li>
+      <li>六张卡顺序可在设置里拖动调整，也可以整张隐藏。</li>
+      <li>摘要文字一律取该模块当前最需要看的一条，不显示统计总数。</li>
+    </ul>
+  </section>
+
+  <!-- 04 -->
+  <section id="s4">
+    <h2><span class="no">04</span>今日计划</h2>
+    <p>一天的执行面。左边按时间排，右边是昨天遗留和各模块待拉进来的东西。未完成不自动顺延，昨天的事留在遗留栏，你自己决定拉不拉。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/today</span><span class="sp"></span><span>7 条 · 完成 3</span></div>
+      <div class="wf-body">
+        <div class="row">
+          <span class="chip">昨天</span><span class="chip on">今天</span><span class="chip">明天</span>
+          <span style="flex:1"></span>
+          <span class="chip">全部</span><span class="chip">未完成</span><span class="chip">按模块</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 250px; gap:9px;">
+          <div class="b s col" style="gap:0; padding:4px 10px;">
+            <div class="row" style="padding:6px 0; border-bottom:1px solid var(--line2);">
+              <span class="mini" style="width:38px">09:00</span><span class="bx on"></span>
+              <span style="text-decoration:line-through;color:#a3a39a;flex:1">改第三章提纲</span>
+              <span class="chip">45m</span><span class="drag">⋮⋮</span>
+            </div>
+            <div class="row" style="padding:6px 0; border-bottom:1px solid var(--line2);">
+              <span class="mini" style="width:38px">11:00</span><span class="bx"></span>
+              <span style="flex:1">写公众号初稿</span>
+              <span class="dotm" style="background:#8fb3a0"></span><span class="chip">2h</span><span class="drag">⋮⋮</span>
+            </div>
+            <div class="row" style="padding:6px 0; border-bottom:1px solid var(--line2);">
+              <span class="mini" style="width:38px">14:30</span><span class="bx"></span>
+              <span style="flex:1">修 api-service 分页 bug</span>
+              <span class="dotm" style="background:#a99bb3"></span><span class="chip">1h</span><span class="drag">⋮⋮</span>
+            </div>
+            <div class="row" style="padding:6px 0; border-bottom:1px solid var(--line2);">
+              <span class="mini" style="width:38px">20:00</span><span class="bx"></span>
+              <span class="flex:1">读 Buell 第二章</span>
+              <span class="dotm" style="background:#b3ae8f"></span><span class="chip">1.5h</span><span class="drag">⋮⋮</span>
+            </div>
+            <div class="row" style="padding:8px 0;"><span class="mini" style="width:38px"></span><span class="mini">＋ 添加任务（时间可空），回车继续加下一行</span></div>
+          </div>
+
+          <div class="col">
+            <div class="b w col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">昨天遗留</span><span class="mini">2</span></div>
+              <div class="row"><span style="flex:1">整理论文参考文献</span><span class="mini">拉入</span></div>
+              <div class="row"><span style="flex:1">回实验室邮件</span><span class="mini">拉入</span></div>
+              <div class="mini">不自动顺延，手动拉或丢掉</div>
+            </div>
+            <div class="b s col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">从模块拉取</span><span class="mini">按需</span></div>
+              <div class="row"><span class="dotm" style="background:#a99bb3"></span><span style="flex:1">待修：登录超时</span><span class="mini">＋</span></div>
+              <div class="row"><span class="dotm" style="background:#8fb3a0"></span><span style="flex:1">《不可食的动物》发稿</span><span class="mini">＋</span></div>
+              <div class="row"><span class="dotm" style="background:#b3ae8f"></span><span style="flex:1">组会 PPT 大纲</span><span class="mini">＋</span></div>
+            </div>
+            <div class="b col" style="gap:4px;">
+              <div class="name">今日负荷</div>
+              <div class="mini">已排 5h 15m / 可用 6h</div>
+              <div class="ph d"><div class="ph" style="width:87%;background:#c9a227"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>拖 <span class="drag">⋮⋮</span> 改顺序，拖到另一个时间段就改时间。没时间的条目排在「无时间」区。</li>
+      <li>勾选后不消失，留在原位变灰加删除线，让你看见今天做完了什么。</li>
+      <li>「从模块拉取」列的是各模块里带日期、落在今天的条目：开发的任务、自媒体的发稿日、学习的组会、运动的训练日。</li>
+      <li>右侧负荷条按预计时长累加，超过可用时长变黄提醒，不阻止你继续加。</li>
+      <li>每条任务可以带一条备注，点行尾小圆点展开。</li>
+    </ul>
+  </section>
+
+  <!-- 05 -->
+  <section id="s5">
+    <h2><span class="no">05</span>自媒体</h2>
+    <p>看板形态，四个状态就是一列。卡片从想法一路拖到已发布，拖到最后一列时顺手填发布链接和手填数据。点卡片从右侧滑出抽屉写正文，看板上下文不丢。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/media</span><span class="sp"></span><span>本月发布 3</span></div>
+      <div class="wf-body">
+        <div class="row">
+          <span class="chip on">全部平台</span><span class="chip">公众号</span><span class="chip">小红书</span><span class="chip">B站</span>
+          <span style="flex:1"></span><span class="chip">＋ 新选题</span>
+        </div>
+        <div class="g4">
+          <div class="b t col">
+            <div class="row" style="justify-content:space-between"><span class="name">想法</span><span class="mini">5</span></div>
+            <div class="b s col" style="gap:2px;"><span>味觉伦理能怎么写成科普</span><span class="mini">公众号 · 无日期</span></div>
+            <div class="b s col" style="gap:2px;"><span>《蜜蜂》里的集体身体</span><span class="mini">小红书 · 无日期</span></div>
+            <div class="mini">＋ 一条想法</div>
+          </div>
+          <div class="b t col">
+            <div class="row" style="justify-content:space-between"><span class="name">大纲</span><span class="mini">2</span></div>
+            <div class="b s col" style="gap:2px;"><span>为什么我们不吃狗却吃猪</span><span class="mini">公众号 · 11/05</span></div>
+            <div class="mini">＋ 一条想法</div>
+          </div>
+          <div class="b t col">
+            <div class="row" style="justify-content:space-between"><span class="name">写作中</span><span class="mini">1</span></div>
+            <div class="b s col" style="gap:2px;"><span>《不可食的动物》初稿</span><span class="mini">1 820 字 · 计划 11/02</span></div>
+            <div class="mini">＋ 一条想法</div>
+          </div>
+          <div class="b t col">
+            <div class="row" style="justify-content:space-between"><span class="name">已发布</span><span class="mini">3</span></div>
+            <div class="b s col" style="gap:2px;"><span>养鸡场里的乌托邦</span><span class="mini">10/24 · 阅读 1.2k · 赞 88</span></div>
+            <div class="mini">＋ 一条想法</div>
+          </div>
+        </div>
+        <div class="b a row" style="justify-content:space-between;">
+          <span class="mini">点卡片 → 右侧 480px 抽屉</span>
+          <span class="mini">正文 · 字数 · 截止 · 发布记录</span>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>拖卡片跨列即改状态，落位时写一条 200ms 的状态变更记录（用于以后看从想法到发布用了几天）。</li>
+      <li>拖进「已发布」时，卡片顶部展开一行内表单：发布日、平台、链接、阅读、互动。填完或跳过即可。</li>
+      <li>抽屉里的正文是纯文本，支持 Markdown 标记，实时显示字数与阅读时长估算。</li>
+      <li>已发布卡片可以填「回头看」一句话，比如这条为什么没起量。</li>
+      <li>列内按计划发布日升序，无日期的沉底。</li>
+    </ul>
+  </section>
+
+  <!-- 06 -->
+  <section id="s6">
+    <h2><span class="no">06</span>开发工作</h2>
+    <p>左选项目，右看项目里的四件事：任务、Bug、版本、日志。四者结构不同，不共用一套表格。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/dev/api-service/bugs</span><span class="sp"></span><span>2 个项目进行中</span></div>
+      <div class="wf-body">
+        <div style="display:grid; grid-template-columns:190px 1fr; gap:9px;">
+          <div class="b t col" style="gap:4px;">
+            <div class="mini">项目</div>
+            <div class="b a row" style="gap:4px;"><span class="dotm" style="background:#5b8f5b"></span><span style="flex:1">api-service</span><span class="chip">3</span></div>
+            <div class="b s row" style="gap:4px;"><span class="dotm" style="background:#c9a227"></span><span style="flex:1">个人站点</span><span class="chip">0</span></div>
+            <div class="b s row" style="gap:4px;"><span class="dotm" style="background:#a3a39a"></span><span style="flex:1">旧爬虫脚本</span><span class="chip">1</span></div>
+            <div class="mini">＋ 新项目</div>
+          </div>
+          <div class="col">
+            <div class="b s col" style="gap:4px;">
+              <div class="row"><span class="name">api-service</span><span class="chip">Node</span><span class="chip">进行中</span><span style="flex:1"></span><span class="mini">仓库 <span class="arw">↗</span></span></div>
+              <div class="row"><span class="chip on">任务 6</span><span class="chip">Bug 3</span><span class="chip">版本 2</span><span class="chip">日志</span></div>
+            </div>
+            <div class="b s col" style="gap:0; padding:4px 10px;">
+              <div class="row" style="padding:5px 0; border-bottom:1px solid var(--line2);"><span class="chip" style="color:#a33">严重</span><span style="flex:1">登录超时后不刷新 token</span><span class="mini">待修</span></div>
+              <div class="row" style="padding:5px 0; border-bottom:1px solid var(--line2);"><span class="chip">一般</span><span style="flex:1">分页参数越界返回 500</span><span class="mini">待修</span></div>
+              <div class="row" style="padding:5px 0; border-bottom:1px solid var(--line2);"><span class="chip">轻微</span><span style="flex:1">日志时间戳少一位</span><span class="mini">已修</span></div>
+              <div class="row" style="padding:7px 0;"><span class="mini">＋ 记一个 bug（严重度、复现步骤可展开写）</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>四个标签页各自的最小结构：<b>任务</b>按功能/修复/优化分三组、可勾选；<b>Bug</b>是表（严重度、标题、状态、复现步骤）；<b>版本</b>是竖向里程碑，每个版本挂它包含的任务；<b>日志</b>一天一条，按日期倒序。</li>
+      <li>项目状态四档：进行中、暂停、已完成、搁置，用圆点颜色区分，不用进度百分比。</li>
+      <li>点 Bug 行展开复现步骤与修复思路，展开状态记在本地，下次进来自动展开上次没关的那条。</li>
+      <li>日志只有一行输入，回车即存；同一天再写就是追加一段，不覆盖。</li>
+      <li>切项目时标签页保持不变（在 api-service 看 Bug，切到个人站点还是看 Bug）。</li>
+    </ul>
+  </section>
+
+  <!-- 07 -->
+  <section id="s7">
+    <h2><span class="no">07</span>学习工作</h2>
+    <p>顶上是未来两周的日程条，放组会、课程、截止日期。下面是文献表和详情。输出物单独一条，放摘要、提纲、写作片段这类半成品。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/study</span><span class="sp"></span><span>待读 12 · 在读 2</span></div>
+      <div class="wf-body">
+        <div class="b s row" style="gap:6px; overflow:hidden;">
+          <span class="mini" style="width:26px">10/30</span><span class="chip">今</span>
+          <span class="mini" style="width:26px">10/31</span><span class="chip">—</span>
+          <span class="mini" style="width:26px">11/01</span><span class="chip">—</span>
+          <span class="mini" style="width:26px">11/02</span><span class="chip" style="border-color:#b5d4f4;background:#eaf2fb">组会 14:00</span>
+          <span class="mini" style="width:26px">11/03</span><span class="chip">交提纲</span>
+          <span class="mini" style="width:26px">11/04</span><span class="chip">—</span>
+          <span class="mini" style="width:26px">11/05</span><span class="chip">—</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:9px;">
+          <div class="b s col" style="gap:0; padding:4px 10px;">
+            <div class="row" style="border-bottom:1px solid var(--line2); padding:4px 0;">
+              <span class="mini" style="flex:1">题名</span><span class="mini" style="width:42px">年份</span><span class="mini" style="width:52px">状态</span><span class="mini" style="width:44px">进度</span>
+            </div>
+            <div class="row" style="padding:5px 0; border-bottom:1px solid var(--line2); background:#f5f9fd;">
+              <span style="flex:1">The Environmental Imagination</span><span class="mini" style="width:42px">1995</span><span class="mini" style="width:52px">在读</span><span class="mini" style="width:44px">40%</span>
+            </div>
+            <div class="row" style="padding:5px 0; border-bottom:1px solid var(--line2);">
+              <span style="flex:1">Slow Violence and the Environmentalism of the Poor</span><span class="mini" style="width:42px">2011</span><span class="mini" style="width:52px">待读</span><span class="mini" style="width:44px">—</span>
+            </div>
+            <div class="row" style="padding:5px 0; border-bottom:1px solid var(--line2);">
+              <span style="flex:1">The Animal That Therefore I Am</span><span class="mini" style="width:42px">2008</span><span class="mini" style="width:52px">已读</span><span class="mini" style="width:44px">100%</span>
+            </div>
+            <div class="row" style="padding:7px 0;"><span class="mini">＋ 添加文献（题名 / 作者 / 年份 / 标签）</span></div>
+          </div>
+          <div class="col">
+            <div class="b s col" style="gap:4px;">
+              <div class="name">The Environmental Imagination</div>
+              <div class="mini">Buell, 1995 · 标签：理论 / 生态批评</div>
+              <div class="row"><span class="mini" style="width:30px">进度</span><div class="ph d" style="flex:1"><div class="ph" style="width:40%;background:#185fa5"></div></div><span class="mini">40%</span></div>
+              <div class="mini">笔记</div>
+              <div class="b" style="background:#fff;font-size:10.5px;color:#6b6b62">第二章把「环境想象」拆成四条…</div>
+            </div>
+          </div>
+        </div>
+        <div class="b col" style="gap:3px;">
+          <div class="row" style="justify-content:space-between"><span class="name">输出物</span><span class="mini">5</span></div>
+          <div class="row"><span class="chip">提纲</span><span style="flex:1">第三章框架草稿</span><span class="mini">10/28 改</span></div>
+          <div class="row"><span class="chip">摘要</span><span style="flex:1">Hwang Sun-mi 那本的一句话</span><span class="mini">10/26</span></div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>状态三态点一下就换：待读 → 在读 → 已读，循环，不弹选单。切到「在读」时进度自动填 1%。</li>
+      <li>进度条可拖动，松手即存。已读会自动补成 100%。</li>
+      <li>文献表支持按标签筛选、按年份或状态排序；搜索框只搜题名和作者。</li>
+      <li>日程条上的组会条目点一下展开：日期时间、要交的东西、上次讨论的遗留问题。</li>
+      <li>输出物点开占满整个内容区写，<span class="kbd">Esc</span> 回到列表。</li>
+    </ul>
+  </section>
+
+  <!-- 08 -->
+  <section id="s8">
+    <h2><span class="no">08</span>运动计划</h2>
+    <p>记录型，不排课表。左边按日期堆训练记录，右边是动作库和选中动作的重量曲线。底部一条 12 周频率热力图。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/fitness</span><span class="sp"></span><span>本周 3 / 4 · 连续 6 周</span></div>
+      <div class="wf-body">
+        <div style="display:grid; grid-template-columns:1fr 240px; gap:9px;">
+          <div class="col">
+            <div class="b s col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">10/30 周五 · 上肢推</span><span class="mini">52 分钟</span></div>
+              <div class="row" style="border-top:1px solid var(--line2); padding-top:4px;"><span style="flex:1">卧推</span><span class="chip">4×8</span><span class="chip">60 kg</span><span class="chip">RPE 7</span></div>
+              <div class="row"><span style="flex:1">哑铃肩推</span><span class="chip">3×10</span><span class="chip">16 kg</span><span class="chip">RPE 8</span></div>
+              <div class="row"><span style="flex:1">绳索下压</span><span class="chip">3×12</span><span class="chip">25 kg</span><span class="chip">RPE 7</span></div>
+              <div class="mini">＋ 加动作（搜索动作库）</div>
+            </div>
+            <div class="b s col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">10/28 周三 · 下肢</span><span class="mini">48 分钟</span></div>
+              <div class="row"><span style="flex:1">深蹲</span><span class="chip">5×5</span><span class="chip">80 kg</span><span class="chip">RPE 8</span></div>
+            </div>
+            <div class="b" style="text-align:center; padding:6px;"><span class="mini">＋ 新建一次训练（选日期 → 加动作）</span></div>
+          </div>
+          <div class="col">
+            <div class="b t col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">动作库</span><span class="mini">34</span></div>
+              <div class="row"><span class="chip on">胸</span><span class="chip">背</span><span class="chip">腿</span><span class="chip">肩</span></div>
+              <div class="mini">搜索动作…</div>
+              <div class="row"><span style="flex:1">卧推</span><span class="mini">PR 70kg</span></div>
+              <div class="row"><span style="flex:1">上斜卧推</span><span class="mini">PR 50kg</span></div>
+            </div>
+            <div class="b s col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">卧推重量</span><span class="mini">近 12 次</span></div>
+              <svg viewBox="0 0 200 56" style="width:100%;height:56px">
+                <polyline points="8,44 30,42 52,40 74,36 96,34 118,30 140,26 162,24 184,20" fill="none" stroke="#a99bb3" stroke-width="1.5"/>
+                <circle cx="184" cy="20" r="2.5" fill="#a99bb3"/>
+              </svg>
+              <div class="mini">PR 70 kg · 10/12</div>
+            </div>
+            <div class="b col" style="gap:3px;">
+              <div class="name">近 12 周频率</div>
+              <div class="row" style="gap:3px;">
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#cfe0c4"></span>
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#a9c99a"></span>
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#7fae6b"></span>
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#a9c99a"></span>
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#cfe0c4"></span>
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#e6e6dc"></span>
+                <span class="dotm" style="width:9px;height:9px;border-radius:2px;background:#7fae6b"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>录入靠键盘：加完动作后在组数→次数→重量→RPE 之间用 <span class="kbd">Tab</span> 走，<span class="kbd">Enter</span> 换下一行动作。</li>
+      <li>填重量时如果这个动作以前做过，下方灰字提示上次重量与 PR，方便判断加不加。</li>
+      <li>动作名支持前缀搜索，库里没有就当场新建，同时归到某个部位。</li>
+      <li>曲线按动作看，横轴是日期不是序号，缺练的周留空不断线。</li>
+      <li>体重不在这里，在饮食页。这块只记重量与次数。</li>
+    </ul>
+  </section>
+
+  <!-- 09 -->
+  <section id="s9">
+    <h2><span class="no">09</span>饮食计划</h2>
+    <p>四餐分栏，右栏是营养合计和体重卡。记一餐的成本要压到最低：输入食物名、份量自动带出上次的，热量自动算。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/food</span><span class="sp"></span><span>今天 · 10/30</span></div>
+      <div class="wf-body">
+        <div class="row">
+          <span class="chip">‹ 10/29</span><span class="chip on">10/30 今天</span><span class="chip">10/31 ›</span>
+          <span style="flex:1"></span><span class="mini">热量 1 240 / 2 100</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 250px; gap:9px;">
+          <div class="g4">
+            <div class="b t col" style="gap:3px;">
+              <div class="row" style="justify-content:space-between"><span class="name">早餐</span><span class="mini">420</span></div>
+              <div class="row"><span style="flex:1">燕麦 60g</span><span class="mini">230</span></div>
+              <div class="row"><span style="flex:1">鸡蛋 2 个</span><span class="mini">190</span></div>
+              <div class="mini">＋ 添加</div>
+            </div>
+            <div class="b t col" style="gap:3px;">
+              <div class="row" style="justify-content:space-between"><span class="name">午餐</span><span class="mini">820</span></div>
+              <div class="row"><span style="flex:1">鸡胸 150g</span><span class="mini">250</span></div>
+              <div class="row"><span style="flex:1">米饭 200g</span><span class="mini">260</span></div>
+              <div class="mini">＋ 添加</div>
+            </div>
+            <div class="b t col" style="gap:3px;">
+              <div class="row" style="justify-content:space-between"><span class="name">晚餐</span><span class="mini">—</span></div>
+              <div class="mini" style="padding:6px 0">还没记</div>
+              <div class="mini">＋ 添加</div>
+            </div>
+            <div class="b t col" style="gap:3px;">
+              <div class="row" style="justify-content:space-between"><span class="name">加餐</span><span class="mini">—</span></div>
+              <div class="mini" style="padding:6px 0">还没记</div>
+              <div class="mini">＋ 添加</div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="b s col" style="gap:5px;">
+              <div class="row" style="justify-content:space-between"><span class="name">营养合计</span><span class="mini">目标</span></div>
+              <div class="row"><span class="mini" style="width:26px">蛋白</span><div class="ph d" style="flex:1"><div class="ph" style="width:65%;background:#8f9bb3"></div></div><span class="mini">78/120</span></div>
+              <div class="row"><span class="mini" style="width:26px">碳水</span><div class="ph d" style="flex:1"><div class="ph" style="width:48%;background:#b3a68f"></div></div><span class="mini">142/280</span></div>
+              <div class="row"><span class="mini" style="width:26px">脂肪</span><div class="ph d" style="flex:1"><div class="ph" style="width:40%;background:#a3a39a"></div></div><span class="mini">38/70</span></div>
+            </div>
+            <div class="b a col" style="gap:4px;">
+              <div class="row" style="justify-content:space-between"><span class="name">体重</span><span class="mini">近 7 天</span></div>
+              <div class="row"><span style="font-size:16px;font-weight:500;color:#1e1e1c">68.4</span><span class="mini">kg · 今早</span><span style="flex:1"></span><span class="mini">改</span></div>
+              <svg viewBox="0 0 200 40" style="width:100%;height:40px">
+                <polyline points="8,18 40,20 72,16 104,22 136,19 168,24 190,21" fill="none" stroke="#185fa5" stroke-width="1.5"/>
+                <circle cx="190" cy="21" r="2.5" fill="#185fa5"/>
+              </svg>
+              <div class="mini">7 日均 68.7 · 趋势 −0.3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>点「＋ 添加」出现搜索面板（贴在该列下方，不是模态框），输入两三个字就出候选，选中后份量预填上次的值。</li>
+      <li>改份量时热量按比例重算；食物库里没有的，填一次名称和每 100g 营养后就永久留在库里。</li>
+      <li>体重卡点数字直接改；同一天记多次只保留最后一次，但原始记录都留着，可展开看。</li>
+      <li>体重放这里，运动页不重复显示。练完顺手称也在这个页面左上角有个「称一下」入口，省得翻页。</li>
+      <li>营养目标在设置里改，三条横条只显示今天，不做周月报表。</li>
+    </ul>
+  </section>
+
+  <!-- 10 -->
+  <section id="s10">
+    <h2><span class="no">10</span>游戏娱乐</h2>
+    <p>不管进度，管心愿。一堆「想做但没做」的事，加一个随机按钮帮你决定今天做哪件。状态切换只有四档，钉「本周」的最多三条，首页摘要就读这三条。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/play</span><span class="sp"></span><span>16 条 · 本周钉了 2</span></div>
+      <div class="wf-body">
+        <div class="row">
+          <span class="chip on">全部</span><span class="chip">游戏</span><span class="chip">剧</span><span class="chip">书</span><span class="chip">出行</span><span class="chip">店</span>
+          <span style="flex:1"></span><span class="chip">随机抽一条</span><span class="chip">＋ 记一条</span>
+        </div>
+        <div class="g3">
+          <div class="b a col" style="gap:3px;">
+            <div class="row" style="justify-content:space-between"><span class="name">极乐迪斯科 第三章</span><span class="chip">本周</span></div>
+            <div class="mini">游戏 · 阿哲推荐 · 在做</div>
+            <div class="mini">想看看它怎么处理「集体记忆」</div>
+          </div>
+          <div class="b s col" style="gap:3px;">
+            <div class="row" style="justify-content:space-between"><span class="name">《漫长的季节》</span><span class="chip">本周</span></div>
+            <div class="mini">剧 · 自己在追 · 想做</div>
+            <div class="mini">听说镜头语言值得拆</div>
+          </div>
+          <div class="b s col" style="gap:3px;">
+            <div class="row" style="justify-content:space-between"><span class="name">去一趟自然博物馆</span><span class="mini"></span></div>
+            <div class="mini">出行 · 自己想到 · 想做</div>
+            <div class="mini">看标本陈列怎么讲故事</div>
+          </div>
+          <div class="b s col" style="gap:3px;">
+            <div class="row" style="justify-content:space-between"><span class="name">城西那家手冲</span><span class="mini"></span></div>
+            <div class="mini">店 · 同事说 · 想做</div>
+            <div class="mini">——</div>
+          </div>
+          <div class="b s col" style="gap:3px;">
+            <div class="row" style="justify-content:space-between"><span class="name">《Stray》</span><span class="mini"></span></div>
+            <div class="mini">游戏 · 想玩但没买 · 搁置</div>
+            <div class="mini">等打折</div>
+          </div>
+          <div class="b t col" style="gap:3px;">
+            <div class="name">已完成 4 条</div>
+            <div class="mini">折叠 · 点开看归档</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>「随机抽一条」从「想做」里抽，抽中后卡片高亮 1 秒并滑到最前，不弹窗。</li>
+      <li>只有「想做」和「在做」能被钉到本周，钉满三条后按钮变灰并提示先取消一条。</li>
+      <li>卡片上点状态文字循环切换四态，不用下拉菜单。</li>
+      <li>「谁推荐的」是个自由文本框，带历史联想，不建人物表。</li>
+      <li>已完成的收进折叠区，不占主视图。</li>
+    </ul>
+  </section>
+
+  <!-- 11 -->
+  <section id="s11">
+    <h2><span class="no">11</span>数据与设置</h2>
+    <p>四个分区，都是列表，没有花活。这里也是唯一放模态框的地方：导入和清空。</p>
+
+    <div class="wf">
+      <div class="wf-top"><span class="u">#/settings</span><span class="sp"></span><span>数据 2.4 MB</span></div>
+      <div class="wf-body">
+        <div class="g12">
+          <div class="b s sp6 col" style="gap:4px;">
+            <div class="name">数据</div>
+            <div class="row"><span style="flex:1">导出全部为 JSON</span><span class="chip">下载</span></div>
+            <div class="row"><span style="flex:1">从文件导入</span><span class="chip">选择文件</span></div>
+            <div class="row"><span style="flex:1">最近一次导出</span><span class="mini">10/28 21:40</span></div>
+            <div class="mini">导入时可选「合并」或「整体替换」</div>
+          </div>
+          <div class="b s sp6 col" style="gap:3px;">
+            <div class="name">各模块条目数</div>
+            <div class="row"><span style="flex:1">今日计划</span><span class="mini">312</span></div>
+            <div class="row"><span style="flex:1">自媒体</span><span class="mini">27</span></div>
+            <div class="row"><span style="flex:1">开发 / 学习 / 运动 / 饮食 / 娱乐</span><span class="mini">…</span></div>
+            <div class="mini">单独清空某模块需输入模块名确认</div>
+          </div>
+          <div class="b s sp6 col" style="gap:4px;">
+            <div class="name">目标</div>
+            <div class="row"><span style="flex:1">每日热量</span><span class="chip">2 100 kcal</span></div>
+            <div class="row"><span style="flex:1">蛋白 / 碳水 / 脂肪</span><span class="chip">120 / 280 / 70</span></div>
+            <div class="row"><span style="flex:1">每周训练次数</span><span class="chip">4</span></div>
+          </div>
+          <div class="b s sp6 col" style="gap:4px;">
+            <div class="name">词库与外观</div>
+            <div class="row"><span style="flex:1">学习标签</span><span class="mini">12 个</span></div>
+            <div class="row"><span style="flex:1">动作库</span><span class="mini">34 个</span></div>
+            <div class="row"><span style="flex:1">食物库</span><span class="mini">58 个</span></div>
+            <div class="row"><span style="flex:1">一周起始 / 首页卡片顺序</span><span class="mini">周一 · 拖动</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li>导入前先校验版本号与结构，不合法就整份拒绝，不半途写入。</li>
+      <li>「整体替换」是两步确认，第一步说清会影响哪些模块的多少条数据。</li>
+      <li>清空单模块时要求手打模块名，防止误点。</li>
+      <li>导出文件名带日期：<code>lifeapp-2026-10-30.json</code>，直接落到下载目录。</li>
+    </ul>
+  </section>
+
+  <!-- 12 -->
+  <section id="s12">
+    <h2><span class="no">12</span>键盘与状态</h2>
+    <div class="cols2">
+      <div>
+        <h3>全局键位</h3>
+        <table>
+          <tr><td><span class="kbd">1</span>–<span class="kbd">8</span></td><td>切到对应模块</td></tr>
+          <tr><td><span class="kbd">⌘K</span> / <span class="kbd">Ctrl K</span></td><td>全局搜索（跨模块找条目）</td></tr>
+          <tr><td><span class="kbd">N</span></td><td>当前页新建</td></tr>
+          <tr><td><span class="kbd">Esc</span></td><td>关抽屉 / 退出编辑 / 取消输入</td></tr>
+          <tr><td><span class="kbd">⌘Z</span></td><td>撤销最近一次删除</td></tr>
+        </table>
+        <p class="mini">在输入框内时数字键与 N 不触发跳转。</p>
+      </div>
+      <div>
+        <h3>保存状态</h3>
+        <ul>
+          <li>顶栏右侧一个 6px 圆点。写入中灰色轻微脉冲，完成转绿，1 秒后淡出到半透明。</li>
+          <li>写失败变红，点开显示原因，通常只有存储空间满。</li>
+          <li>页面关闭前若有未落盘的输入，用 <code>beforeunload</code> 拦截一次。</li>
+        </ul>
+      </div>
+    </div>
+    <h3>跨模块数据关系</h3>
+    <ul>
+      <li>今日计划只存引用：<code>{模块, 条目id}</code>，标题变了首页跟着变，不做副本。</li>
+      <li>首页六张卡各自读一个 <code>summary</code> 查询，不吃全表。</li>
+      <li>体重只属于饮食模块，运动模块不读它，避免两处改同一件事。</li>
+      <li>所有模块共用一套 <code>updatedAt</code>，导出时按模块分桶，导入按同样的桶写回。</li>
+    </ul>
+  </section>
+
+  <!-- 13 -->
+  <section id="s13">
+    <h2><span class="no">13</span>待你决定</h2>
+    <p>这四个是真正会影响做法的小分叉，我先给了倾向，你不同意就改。</p>
+    <table>
+      <tr><th style="width:34%">问题</th><th style="width:38%">我的倾向</th><th>影响</th></tr>
+      <tr><td><b>自媒体写稿在哪写</b></td><td>右侧抽屉（480px），看板不离开视线</td><td>改成整页会失去看板上下文，但长文更宽敞</td></tr>
+      <tr><td><b>深色模式</b></td><td>第一版一起做，颜色变量本来就一套</td><td>不做可省一天，做要定两套灰阶</td></tr>
+      <tr><td><b>首页六卡顺序</b></td><td>可拖拽，存在设置里</td><td>固定顺序省事，但用久了会有想前置的卡</td></tr>
+      <tr><td><b>全局搜索范围</b></td><td>搜任务、文献、选题、bug、心愿五类标题</td><td>扩到正文会让搜索变慢且结果噪音大</td></tr>
+    </table>
+  </section>
+
+</main>
+</div>
+</body>
+</html>
